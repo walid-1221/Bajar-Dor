@@ -1,6 +1,7 @@
 import React from 'react';
 import banner from "@/images/bazar-hero.png";
 import Image from 'next/image';
+import TodayDate from '@/components/TodayDate';
 
 const Banner = () => {
     return (
@@ -12,7 +13,7 @@ const Banner = () => {
                 
                 <div className="flex-1 w-full">
                     <div className="inline-block bg-emerald-50 text-emerald-700 px-4 py-1.5 rounded-full text-sm font-medium mb-5">
-                        <Date />
+                        <TodayDate options={{ dateStyle: 'full' }} />
                     </div>
 
                     <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">

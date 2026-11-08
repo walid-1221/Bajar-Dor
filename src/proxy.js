@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+// Only the lightweight cookie helper is imported here. The proxy runs as an
+// edge function on Netlify, and the full auth server (with the MongoDB driver)
+// can't be bundled there. Pages that show private data still verify the
+// session on the server.
+import { getSessionCookie } from "better-auth/cookies";
 
 const protectedPaths = ["/product", "/profile", "/update-user"];
 const authPaths = ["/sign-in", "/sign-up"];
@@ -12,7 +16,7 @@ export async function proxy(request) {
   // home, category egulo public, session check lagbe na
   if (!isProtected && !isAuthPage) return NextResponse.next();
 
-  const session = await auth.api.getSession({ headers: request.headers });
+  const session = getSessionCookie(request);
 
   // login nai, protected page e jete chay -> sign-in e pathao
   if (!session && isProtected) {
