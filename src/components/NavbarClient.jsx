@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -9,13 +9,39 @@ import { ChevronDown, LogOut, User } from "lucide-react";
 import Logo from "@/images/logo-icon.png";
 import { signOut, useSession } from "@/lib/auth-client";
 
+function CategoryLinks({ categories, pathname }) {
+  return categories.map((category) => {
+    const active = pathname === `/category/${category.id}`;
+    return (
+      <Link
+        key={category.id}
+        href={`/category/${category.id}`}
+        aria-current={active ? "page" : undefined}
+        className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+          active
+            ? "bg-emerald-600 text-white"
+            : "text-gray-600 hover:bg-emerald-50 hover:text-emerald-600"
+        }`}
+      >
+        <span className="text-base">{category.icon}</span>
+        <span>{category.nameBn}</span>
+      </Link>
+    );
+  });
+}
+
+// usePathname() is runtime-only data, so it must live inside a Suspense boundary
+function ActiveCategoryLinks({ categories }) {
+  const pathname = usePathname();
+  return <CategoryLinks categories={categories} pathname={pathname} />;
+}
+
 export default function NavbarClient({ categories = [] }) {
   const { data: session, isPending } = useSession();
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState("");
   const menuRef = useRef(null);
   const router = useRouter();
-  const pathname = usePathname();
 
   const user = session?.user;
 
@@ -130,24 +156,9 @@ export default function NavbarClient({ categories = [] }) {
 
         {/* ক্যাটাগরি মেনু */}
         <div className="scrollbar-hide flex items-center gap-2 overflow-x-auto border-t border-gray-100 py-3">
-          {categories.map((category) => {
-            const active = pathname === `/category/${category.id}`;
-            return (
-              <Link
-                key={category.id}
-                href={`/category/${category.id}`}
-                aria-current={active ? "page" : undefined}
-                className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-sm font-medium transition-colors ${
-                  active
-                    ? "bg-emerald-600 text-white"
-                    : "text-gray-600 hover:bg-emerald-50 hover:text-emerald-600"
-                }`}
-              >
-                <span className="text-base">{category.icon}</span>
-                <span>{category.nameBn}</span>
-              </Link>
-            );
-          })}
+          <Suspense fallback={<CategoryLinks categories={categories} />}>
+            <ActiveCategoryLinks categories={categories} />
+          </Suspense>
         </div>
       </div>
     </nav>
