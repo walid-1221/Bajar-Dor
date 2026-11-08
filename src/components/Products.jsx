@@ -1,4 +1,5 @@
 import React from 'react';
+import TodayDate from '@/components/TodayDate';
 
 const Products = async () => {
     const res = await fetch("https://api.abcz.workers.dev/api/bazardor/products");
@@ -6,12 +7,6 @@ const Products = async () => {
 
     const products = Array.isArray(data) ? data : data.data || [];
     
-    // ছবির মতো ডেট ফরম্যাট
-    const todayDate = new Date().toLocaleDateString('bn-BD', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-    });
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full bg-[#f8fafc]">
@@ -20,7 +15,7 @@ const Products = async () => {
             <div className="mb-8">
                 <h2 className="text-2xl font-bold text-gray-900">সব পণ্য</h2>
                 <p className="text-sm text-gray-500 mt-1">
-                    সর্বমোট {products.length}টি পণ্য • হালনাগাদ: {todayDate}
+                    সর্বমোট {products.length}টি পণ্য • হালনাগাদ: <TodayDate />
                 </p>
             </div>
 
